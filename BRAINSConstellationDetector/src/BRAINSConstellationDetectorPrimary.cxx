@@ -179,6 +179,22 @@ bool BRAINSConstellationDetectorPrimary::Compute( void )
     {
     std::cout << "\nLoaded eye centers information for BRAINS Hough Eye Detector." << std::endl;
     std::cout << "Skip estimation steps for eye centers." << std::endl;
+    if (landmarksEMSP.find("LE") != landmarksEMSP.end()
+        && landmarksEMSP.find("RE") != landmarksEMSP.end() )
+      {
+        const SImageType::PointType tmpLE = landmarksEMSP.find("LE")->second;
+        const SImageType::PointType tmpRE = landmarksEMSP.find("RE")->second;
+        // https://en.wikipedia.org/wiki/Pupillary_distance  Minimum inter pupulary distance measured is 51mm for women
+        std::cout << tmpRE << std::endl;
+        std::cout << tmpLE << std::endl;
+        exit(-99);
+        if ( ( tmpRE[0] - tmpLE[0] ) < 40.0 ) // Even better would be something like ( tmpLE[0] - tmpRE[0] ) <
+          {
+            std::cerr << "ERROR:  'Left Eye' physical location must be at least 40mm to the right of the 'Right Eye'" << std::endl;
+            std::cerr  << "     :   according to https://en.wikipedia.org/wiki/Pupillary_distance" << std::endl;
+            exit(-1);
+          }
+      }
     }
   else if( this->m_forceHoughEyeDetectorReportFailure == true )
     {
